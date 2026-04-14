@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>ShotTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-grid">Skip to shot list</a>
+
+    <div class="app-bg" aria-hidden="true"></div>
+    <div class="app-noise" aria-hidden="true"></div>
+
+    <div class="app-shell">
+      <header class="app-header" role="banner">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div class="brand-text">
+            <h1 class="brand-title">ShotTrack</h1>
+            <p class="brand-sub">VFX production · one page</p>
+          </div>
+        </div>
+
+        <div class="project-bar">
+          <label class="field-label" for="project-name">Project</label>
+          <input
+            id="project-name"
+            class="input input-inline"
+            type="text"
+            autocomplete="organization"
+            aria-label="Project name"
+          />
+        </div>
+
+        <div class="header-actions">
+          <button type="button" class="btn btn-ghost" id="btn-import-json" aria-label="Import JSON">
+            Import
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-export-json" aria-label="Export JSON">
+            Export JSON
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-export-csv" aria-label="Export CSV">
+            Export CSV
+          </button>
+          <input type="file" id="file-import-json" accept="application/json,.json" hidden />
+          <button type="button" class="btn btn-primary" id="btn-add-shot" aria-label="Add shot">
+            + Shot
+          </button>
+        </div>
+      </header>
+
+      <section class="toolbar" aria-label="Filters and view options">
+        <div class="toolbar-row">
+          <div class="search-wrap">
+            <label class="sr-only" for="filter-search">Search shots</label>
+            <input
+              id="filter-search"
+              class="input search-input"
+              type="search"
+              placeholder="Search code, description, owner…"
+              autocomplete="off"
+              aria-describedby="search-hint"
+            />
+            <span id="search-hint" class="sr-only">Filters the table as you type</span>
+          </div>
+
+          <div class="filters">
+            <label class="field-label" for="filter-sequence">Sequence</label>
+            <select id="filter-sequence" class="select"></select>
+
+            <label class="field-label" for="filter-status">Status</label>
+            <select id="filter-status" class="select"></select>
+
+            <label class="field-label" for="filter-owner">Owner</label>
+            <select id="filter-owner" class="select"></select>
+
+            <label class="field-label" for="filter-group">Group</label>
+            <select id="filter-group" class="select" aria-label="Group rows">
+              <option value="sequence" selected>By sequence</option>
+              <option value="flat">Flat list</option>
+            </select>
+
+            <label class="field-label" for="filter-sort">Sort</label>
+            <select id="filter-sort" class="select" aria-label="Sort shots">
+              <option value="code">Shot code</option>
+              <option value="due">Due date</option>
+              <option value="status">Status</option>
+              <option value="priority">Priority</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <main id="main-grid" class="main" role="main">
+        <div class="table-scroller" role="region" aria-label="Shot list table" tabindex="0">
+          <table class="shot-table" id="shot-table">
+            <thead>
+              <tr>
+                <th class="th-fixed th-check" scope="col">
+                  <span class="sr-only">Select</span>
+                </th>
+                <th class="th-fixed th-seq" scope="col">Seq</th>
+                <th class="th-fixed th-code" scope="col">Shot</th>
+                <th scope="col">Description</th>
+                <th scope="col">Status</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Due</th>
+                <th scope="col">Owner</th>
+                <th scope="col">Tasks</th>
+                <th scope="col">Latest</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="shot-tbody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- Drawer -->
+    <div
+      id="drawer-backdrop"
+      class="drawer-backdrop"
+      hidden
+      aria-hidden="true"
+    ></div>
+    <aside
+      id="drawer"
+      class="drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="drawer-title"
+      aria-hidden="true"
+      hidden
+    >
+      <div class="drawer-header">
+        <div>
+          <p class="drawer-kicker" id="drawer-seq"></p>
+          <h2 id="drawer-title" class="drawer-title"></h2>
+        </div>
+        <button type="button" class="btn btn-icon" id="drawer-close" aria-label="Close panel">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+
+      <div class="drawer-body">
+        <div class="drawer-meta">
+          <label class="field-label" for="drawer-status">Shot status</label>
+          <select id="drawer-status" class="select select-block"></select>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Shot detail tabs">
+          <button type="button" class="tab is-active" role="tab" aria-selected="true" data-tab="versions" id="tab-versions">
+            Versions
+          </button>
+          <button type="button" class="tab" role="tab" aria-selected="false" data-tab="tasks" id="tab-tasks">
+            Tasks
+          </button>
+          <button type="button" class="tab" role="tab" aria-selected="false" data-tab="notes" id="tab-notes">
+            Notes
+          </button>
+          <button type="button" class="tab" role="tab" aria-selected="false" data-tab="activity" id="tab-activity">
+            Activity
+          </button>
+        </div>
+
+        <div id="panel-versions" class="tab-panel" role="tabpanel" aria-labelledby="tab-versions">
+          <div class="panel-actions">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-add-version">
+              + Delivery version
+            </button>
+          </div>
+          <ul class="timeline" id="version-list"></ul>
+        </div>
+
+        <div id="panel-tasks" class="tab-panel is-hidden" role="tabpanel" aria-labelledby="tab-tasks" hidden>
+          <ul class="task-list" id="task-list"></ul>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-add-task">+ Task</button>
+        </div>
+
+        <div id="panel-notes" class="tab-panel is-hidden" role="tabpanel" aria-labelledby="tab-notes" hidden>
+          <label class="field-label" for="note-input">New note</label>
+          <textarea id="note-input" class="textarea" rows="3" placeholder="Plain text note…"></textarea>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-add-note">Add note</button>
+          <ul class="note-list" id="note-list"></ul>
+        </div>
+
+        <div id="panel-activity" class="tab-panel is-hidden" role="tabpanel" aria-labelledby="tab-activity" hidden>
+          <ul class="audit-list" id="audit-list"></ul>
+        </div>
+      </div>
+    </aside>
+
+    <div id="toast-region" class="toast-region" aria-live="polite" aria-relevant="additions"></div>
+
+    <script src="js/app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #07080c;
+  --surface: #12161e;
+  --border: #2a3344;
+  --accent: #d4a24a;
+  --text: #e8ecf0;
+  --muted: #8b9aaf;
+}
+
+body {
+  @apply bg-track-bg text-zinc-100 antialiased min-h-screen;
+  background-image:
+    radial-gradient(ellipse 120% 80% at 10% -10%, rgba(212, 162, 74, 0.06), transparent 50%),
+    linear-gradient(180deg, #07080c 0%, #0c0f14 100%);
+}
+
+/* subtle grain */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+}
