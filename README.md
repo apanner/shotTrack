@@ -1,4 +1,4 @@
-# ShotTrack — vendor shot tracking (Next.js + SQLite / Turso)
+# shotTrack — vendor shot tracking (Next.js + SQLite / Turso)
 
 Production-oriented app for **outsource vendor tracking**: projects, shots, **stages** (`temp` → `wip` → `tech_check` → `final`), **bids** (admin-only), Excel-style **paste import**, and **role-based access**.
 
@@ -32,10 +32,8 @@ Copy `.env.example` to `.env.local` and set:
 ## Setup (local)
 
 ```bash
-cd shotTrack
 npm install
-# Ensure data dir exists (drizzle-kit may create it)
-mkdir -p data   # or: New-Item -ItemType Directory -Force data
+mkdir -p data
 set JWT_SECRET=your-32-plus-char-secret
 npx drizzle-kit push
 set ADMIN_USERNAME=apanner
@@ -57,12 +55,10 @@ On the dashboard (admin), paste **tab-separated** data (copy from Excel). Header
 - `POST /api/import/paste` — admin only
 - `POST /api/admin/users` — admin only
 
-## Deploy on Vercel (this repo is a monorepo)
+## Deploy on Vercel
 
-1. Push this repo to GitHub (or GitLab / Bitbucket).
-2. In [Vercel](https://vercel.com) → **Add New…** → **Project** → **Import** your repository.
-3. Under **Root Directory**, set **`shotTrack`** (required: the Next.js app is not at the repo root).
-4. **Environment variables** (Production + Preview if you want previews to work):
+1. Import this repo in [Vercel](https://vercel.com) (**root** = repo root; no subfolder).
+2. **Environment variables** (Production):
 
    | Name | Value |
    |------|--------|
@@ -72,15 +68,7 @@ On the dashboard (admin), paste **tab-separated** data (copy from Excel). Header
 
    Do **not** set `DATABASE_PATH` on Vercel (use Turso only).
 
-5. **Deploy**. After first deploy, run migrations / seed against Turso from your machine (or a CI job) using the same DB URL, or use Turso’s SQL console to apply schema (`drizzle-kit push` pointed at Turso).
-
-6. Optional: install [Vercel CLI](https://vercel.com/docs/cli) and link locally:
-
-   ```bash
-   cd shotTrack
-   npx vercel link
-   npx vercel env pull
-   ```
+3. **Deploy**, then run `drizzle-kit push` / seed against your Turso DB from your machine if needed.
 
 ## Legacy static demo
 
